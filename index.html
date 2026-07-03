@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Raja Ben Said</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@300;400;500&family=Space+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:      #0A0A0A;
+  --black-soft: #141414;
+  --black-card: #1A1712;
+  --gold:       #C9A24B;
+  --gold-bright:#E4C877;
+  --off-white:  #EDEAE3;
+  --grey-dim:   #8C877D;
+
+  --display: 'Cormorant Garamond', 'Georgia', serif;
+  --body:    'Jost', 'Segoe UI', sans-serif;
+  --mono:    'Space Mono', monospace;
+
+  --wrap: 900px;
+}
+
+*{ box-sizing: border-box; }
+html{ scroll-behavior: smooth; }
+body{
+  margin:0;
+  background: var(--black);
+  color: var(--off-white);
+  font-family: var(--body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+a{ color: inherit; text-decoration: none; }
+
+.wrap{
+  max-width: var(--wrap);
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+/* ============ HERO / NAME ============ */
+.hero{
+  position: relative;
+  padding: 130px 0 90px;
+  text-align:center;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(201,162,75,0.10), transparent 60%);
+}
+.hero-title{
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: clamp(3rem, 9vw, 6rem);
+  margin: 0;
+  letter-spacing: 0.06em;
+  background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold) 55%, #8a6d2f 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.hero-rule{
+  width: 90px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 30px auto 0;
+}
+.hero-subtitle{
+  font-family: var(--body);
+  font-weight: 300;
+  font-size: 1rem;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--grey-dim);
+  margin: 18px 0 0;
+}
+
+/* ============ SONGS ============ */
+.songs{
+  padding: 10px 0 110px;
+}
+.track-list{
+  list-style:none;
+  margin:0; padding:0;
+}
+.track{
+  border-bottom: 1px solid rgba(201,162,75,0.18);
+}
+.track-row{
+  display:flex;
+  align-items:center;
+  gap: 22px;
+  padding: 24px 6px;
+  cursor: pointer;
+}
+.track-num{
+  font-family: var(--mono);
+  color: var(--grey-dim);
+  font-size: 0.85rem;
+  width: 24px;
+  flex-shrink:0;
+}
+.track-info{
+  flex-grow:1;
+}
+.track-title{
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 1.4rem;
+  color: var(--off-white);
+  letter-spacing: 0.01em;
+  transition: color .2s ease;
+}
+.track-row:hover .track-title{ color: var(--gold-bright); }
+
+.track-toggle{
+  flex-shrink:0;
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--gold);
+  background: transparent;
+  color: var(--gold);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition: background .2s ease, color .2s ease;
+}
+.track-row:hover .track-toggle,
+.track-toggle[aria-expanded="true"]{
+  background: var(--gold);
+  color: var(--black);
+}
+.track-download{
+  flex-shrink:0;
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(201,162,75,0.4);
+  color: var(--grey-dim);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition: background .2s ease, color .2s ease, border-color .2s ease;
+}
+.track-download:hover{
+  background: var(--gold);
+  color: var(--black);
+  border-color: var(--gold);
+}
+.dl-icon{ width: 16px; height: 16px; }
+
+.play-icon{ width: 14px; height: 14px; margin-left: 2px; }
+.track-toggle[aria-expanded="true"] .icon-play{ display:none; }
+.track-toggle[aria-expanded="false"] .icon-pause{ display:none; }
+
+.track-player{
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .35s ease;
+}
+.player-frame{
+  position: relative;
+  margin-bottom: 24px;
+  padding: 3px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, var(--gold-bright), var(--gold) 45%, #6b5424 100%);
+  box-shadow: 0 0 24px rgba(201,162,75,0.16);
+}
+.player-frame::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius: 9px;
+  background: radial-gradient(ellipse at 30% 0%, rgba(228,200,119,0.35), transparent 60%);
+  pointer-events:none;
+}
+.track-player iframe{
+  position: relative;
+  width: 100%;
+  height: 120px;
+  border: none;
+  border-radius: 6px;
+  display: block;
+  background: var(--black-card);
+}
+.track.is-open .track-player{
+  max-height: 166px;
+}
+
+@media (max-width: 720px){
+  .track-row{ gap: 14px; padding: 20px 4px; }
+  .track-title{ font-size: 1.15rem; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  html{ scroll-behavior:auto; }
+  *{ transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="wrap">
+    <h1 class="hero-title">RAJA BEN SAID</h1>
+    <p class="hero-subtitle">Chansons</p>
+    <div class="hero-rule"></div>
+  </div>
+</section>
+
+<section class="songs">
+  <div class="wrap">
+    <ol class="track-list">
+
+      <li class="track">
+        <div class="track-row" data-track-trigger>
+          <span class="track-num">01</span>
+          <div class="track-info">
+            <span class="track-title">Wahdek Dima T'habel Feya</span>
+          </div>
+          <a class="track-download" href="https://drive.google.com/uc?export=download&id=17wm5hCCbFaWW-gXZvMJYTIib_LZJ967g" aria-label="Download Wahdek Dima T'habel Feya" onclick="event.stopPropagation()">
+            <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+          </a>
+          <button class="track-toggle" aria-expanded="false" aria-label="Play Wahdek Dima T'habel Feya">
+            <svg class="play-icon icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+            <svg class="play-icon icon-pause" viewBox="0 0 24 24" fill="currentColor" style="margin-left:0;"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>
+          </button>
+        </div>
+        <div class="track-player">
+          <div class="player-frame">
+            <iframe src="https://drive.google.com/file/d/17wm5hCCbFaWW-gXZvMJYTIib_LZJ967g/preview"
+                    loading="lazy" allow="autoplay"></iframe>
+          </div>
+        </div>
+      </li>
+
+      <li class="track">
+        <div class="track-row" data-track-trigger>
+          <span class="track-num">02</span>
+          <div class="track-info">
+            <span class="track-title">Asal w Massaro</span>
+          </div>
+          <a class="track-download" href="https://drive.google.com/uc?export=download&id=1aJtbO0DQKtfMHb7_ZOV2Q8QaVt7oJHxf" aria-label="Download Asal w Massaro" onclick="event.stopPropagation()">
+            <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+          </a>
+          <button class="track-toggle" aria-expanded="false" aria-label="Play Asal w Massaro">
+            <svg class="play-icon icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+            <svg class="play-icon icon-pause" viewBox="0 0 24 24" fill="currentColor" style="margin-left:0;"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>
+          </button>
+        </div>
+        <div class="track-player">
+          <div class="player-frame">
+            <iframe src="https://drive.google.com/file/d/1aJtbO0DQKtfMHb7_ZOV2Q8QaVt7oJHxf/preview"
+                    loading="lazy" allow="autoplay"></iframe>
+          </div>
+        </div>
+      </li>
+
+      <li class="track">
+        <div class="track-row" data-track-trigger>
+          <span class="track-num">03</span>
+          <div class="track-info">
+            <span class="track-title">Jinekom</span>
+          </div>
+          <a class="track-download" href="https://drive.google.com/uc?export=download&id=10BazJSSfRDCoW4eSY2rB4DXOzK5K-EAe" aria-label="Download Jinekom" onclick="event.stopPropagation()">
+            <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+          </a>
+          <button class="track-toggle" aria-expanded="false" aria-label="Play Jinekom">
+            <svg class="play-icon icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+            <svg class="play-icon icon-pause" viewBox="0 0 24 24" fill="currentColor" style="margin-left:0;"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>
+          </button>
+        </div>
+        <div class="track-player">
+          <div class="player-frame">
+            <iframe src="https://drive.google.com/file/d/10BazJSSfRDCoW4eSY2rB4DXOzK5K-EAe/preview"
+                    loading="lazy" allow="autoplay"></iframe>
+          </div>
+        </div>
+      </li>
+
+
+      <li class="track">
+        <div class="track-row" data-track-trigger>
+          <span class="track-num">04</span>
+          <div class="track-info">
+            <span class="track-title">Ma Twatini</span>
+          </div>
+          <a class="track-download" href="https://drive.google.com/uc?export=download&id=1c5D2gG5wPymEio3QM5ne4ueG-7F9n9xX" aria-label="Download Ma Twatini" onclick="event.stopPropagation()">
+            <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+          </a>
+          <button class="track-toggle" aria-expanded="false" aria-label="Play Ma Twatini">
+            <svg class="play-icon icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+            <svg class="play-icon icon-pause" viewBox="0 0 24 24" fill="currentColor" style="margin-left:0;"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>
+          </button>
+        </div>
+        <div class="track-player">
+          <div class="player-frame">
+            <iframe src="https://drive.google.com/file/d/1c5D2gG5wPymEio3QM5ne4ueG-7F9n9xX/preview"
+                    loading="lazy" allow="autoplay"></iframe>
+          </div>
+        </div>
+      </li>
+      <li class="track">
+        <div class="track-row" data-track-trigger>
+          <span class="track-num">05</span>
+          <div class="track-info">
+            <span class="track-title">Wallah Me'nisitek</span>
+          </div>
+          <a class="track-download" href="https://drive.google.com/uc?export=download&id=1ZQ2E49duPKMHg-zDJKf5YGveLLYZYt7k" aria-label="Download Wallah Me'nisitek" onclick="event.stopPropagation()">
+            <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+          </a>
+          <button class="track-toggle" aria-expanded="false" aria-label="Play Wallah Me'nisitek">
+            <svg class="play-icon icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+            <svg class="play-icon icon-pause" viewBox="0 0 24 24" fill="currentColor" style="margin-left:0;"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>
+          </button>
+        </div>
+        <div class="track-player">
+          <div class="player-frame">
+            <iframe src="https://drive.google.com/file/d/1ZQ2E49duPKMHg-zDJKf5YGveLLYZYt7k/preview"
+                    loading="lazy" allow="autoplay"></iframe>
+          </div>
+        </div>
+      </li>
+      <li class="track">
+        <div class="track-row" data-track-trigger>
+          <span class="track-num">06</span>
+          <div class="track-info">
+            <span class="track-title">Cocktail Dabka (2006)</span>
+          </div>
+          <a class="track-download" href="https://drive.google.com/uc?export=download&id=1qyRGosPdqP9C2JQUtCDoTv5YO6hI2lp_" aria-label="Download Cocktail Dabka (2006)" onclick="event.stopPropagation()">
+            <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+          </a>
+          <button class="track-toggle" aria-expanded="false" aria-label="Play Cocktail Dabka (2006)">
+            <svg class="play-icon icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+            <svg class="play-icon icon-pause" viewBox="0 0 24 24" fill="currentColor" style="margin-left:0;"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>
+          </button>
+        </div>
+        <div class="track-player">
+          <div class="player-frame">
+            <iframe src="https://drive.google.com/file/d/1qyRGosPdqP9C2JQUtCDoTv5YO6hI2lp_/preview"
+                    loading="lazy" allow="autoplay"></iframe>
+          </div>
+        </div>
+      </li>
+      <li class="track">
+        <div class="track-row" data-track-trigger>
+          <span class="track-num">07</span>
+          <div class="track-info">
+            <span class="track-title">Golou l'Omi</span>
+          </div>
+          <a class="track-download" href="https://drive.google.com/uc?export=download&id=1G87M7VLsfc5q9nHSQW9tfdens2KsWrBT" aria-label="Download Golou l'Omi" onclick="event.stopPropagation()">
+            <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+          </a>
+          <button class="track-toggle" aria-expanded="false" aria-label="Play Golou l'Omi">
+            <svg class="play-icon icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+            <svg class="play-icon icon-pause" viewBox="0 0 24 24" fill="currentColor" style="margin-left:0;"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>
+          </button>
+        </div>
+        <div class="track-player">
+          <div class="player-frame">
+            <iframe src="https://drive.google.com/file/d/1G87M7VLsfc5q9nHSQW9tfdens2KsWrBT/preview"
+                    loading="lazy" allow="autoplay"></iframe>
+          </div>
+        </div>
+      </li>
+      <li class="track">
+        <div class="track-row" data-track-trigger>
+          <span class="track-num">08</span>
+          <div class="track-info">
+            <span class="track-title">Enta Eli Nahwek</span>
+          </div>
+          <a class="track-download" href="https://drive.google.com/uc?export=download&id=12F5S-qukBQtQXJP65I3ywb_5gW98FUhn" aria-label="Download Enta Eli Nahwek" onclick="event.stopPropagation()">
+            <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+          </a>
+          <button class="track-toggle" aria-expanded="false" aria-label="Play Enta Eli Nahwek">
+            <svg class="play-icon icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+            <svg class="play-icon icon-pause" viewBox="0 0 24 24" fill="currentColor" style="margin-left:0;"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>
+          </button>
+        </div>
+        <div class="track-player">
+          <div class="player-frame">
+            <iframe src="https://drive.google.com/file/d/12F5S-qukBQtQXJP65I3ywb_5gW98FUhn/preview"
+                    loading="lazy" allow="autoplay"></iframe>
+          </div>
+        </div>
+      </li>
+      <li class="track">
+        <div class="track-row" data-track-trigger>
+          <span class="track-num">09</span>
+          <div class="track-info">
+            <span class="track-title">Kelma Wahda</span>
+          </div>
+          <a class="track-download" href="https://drive.google.com/uc?export=download&id=1JxC7f-Ux8kunSZHyjejNo-FJDdDyWwtT" aria-label="Download Kelma Wahda" onclick="event.stopPropagation()">
+            <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+          </a>
+          <button class="track-toggle" aria-expanded="false" aria-label="Play Kelma Wahda">
+            <svg class="play-icon icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+            <svg class="play-icon icon-pause" viewBox="0 0 24 24" fill="currentColor" style="margin-left:0;"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>
+          </button>
+        </div>
+        <div class="track-player">
+          <div class="player-frame">
+            <iframe src="https://drive.google.com/file/d/1JxC7f-Ux8kunSZHyjejNo-FJDdDyWwtT/preview"
+                    loading="lazy" allow="autoplay"></iframe>
+          </div>
+        </div>
+      </li>
+      <li class="track">
+        <div class="track-row" data-track-trigger>
+          <span class="track-num">10</span>
+          <div class="track-info">
+            <span class="track-title">Nasini</span>
+          </div>
+          <a class="track-download" href="https://drive.google.com/uc?export=download&id=1XG2lu5UT6WbSjTvvY-o0ZHAJ4Q4UPTKf" aria-label="Download Nasini" onclick="event.stopPropagation()">
+            <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+          </a>
+          <button class="track-toggle" aria-expanded="false" aria-label="Play Nasini">
+            <svg class="play-icon icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+            <svg class="play-icon icon-pause" viewBox="0 0 24 24" fill="currentColor" style="margin-left:0;"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>
+          </button>
+        </div>
+        <div class="track-player">
+          <div class="player-frame">
+            <iframe src="https://drive.google.com/file/d/1XG2lu5UT6WbSjTvvY-o0ZHAJ4Q4UPTKf/preview"
+                    loading="lazy" allow="autoplay"></iframe>
+          </div>
+        </div>
+      </li>
+      <li class="track">
+        <div class="track-row" data-track-trigger>
+          <span class="track-num">11</span>
+          <div class="track-info">
+            <span class="track-title">Wili mn Hobek</span>
+          </div>
+          <a class="track-download" href="https://drive.google.com/uc?export=download&id=1vwleqAoVZsheXE82QY5qdCi6Nxx1ZnhZ" aria-label="Download Wili mn Hobek" onclick="event.stopPropagation()">
+            <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+          </a>
+          <button class="track-toggle" aria-expanded="false" aria-label="Play Wili mn Hobek">
+            <svg class="play-icon icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+            <svg class="play-icon icon-pause" viewBox="0 0 24 24" fill="currentColor" style="margin-left:0;"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>
+          </button>
+        </div>
+        <div class="track-player">
+          <div class="player-frame">
+            <iframe src="https://drive.google.com/file/d/1vwleqAoVZsheXE82QY5qdCi6Nxx1ZnhZ/preview"
+                    loading="lazy" allow="autoplay"></iframe>
+          </div>
+        </div>
+      </li>
+
+
+      <li class="track">
+        <div class="track-row" data-track-trigger>
+          <span class="track-num">12</span>
+          <div class="track-info">
+            <span class="track-title">Ya Ghzali</span>
+          </div>
+          <a class="track-download" href="https://drive.google.com/uc?export=download&id=1O5XtwIdCpaIt1p2ZDlhGTs69bA938BGR" aria-label="Download Ya Ghzali" onclick="event.stopPropagation()">
+            <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+          </a>
+          <button class="track-toggle" aria-expanded="false" aria-label="Play Ya Ghzali">
+            <svg class="play-icon icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+            <svg class="play-icon icon-pause" viewBox="0 0 24 24" fill="currentColor" style="margin-left:0;"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>
+          </button>
+        </div>
+        <div class="track-player">
+          <div class="player-frame">
+            <iframe src="https://drive.google.com/file/d/1O5XtwIdCpaIt1p2ZDlhGTs69bA938BGR/preview"
+                    loading="lazy" allow="autoplay"></iframe>
+          </div>
+        </div>
+      </li>
+      <li class="track">
+        <div class="track-row" data-track-trigger>
+          <span class="track-num">13</span>
+          <div class="track-info">
+            <span class="track-title">Ya'ba Ein</span>
+          </div>
+          <a class="track-download" href="https://drive.google.com/uc?export=download&id=1x1Qf4gJtdVOrK5jhxbIFHCXgBrTUc1a5" aria-label="Download Ya'ba Ein" onclick="event.stopPropagation()">
+            <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+          </a>
+          <button class="track-toggle" aria-expanded="false" aria-label="Play Ya'ba Ein">
+            <svg class="play-icon icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+            <svg class="play-icon icon-pause" viewBox="0 0 24 24" fill="currentColor" style="margin-left:0;"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>
+          </button>
+        </div>
+        <div class="track-player">
+          <div class="player-frame">
+            <iframe src="https://drive.google.com/file/d/1x1Qf4gJtdVOrK5jhxbIFHCXgBrTUc1a5/preview"
+                    loading="lazy" allow="autoplay"></iframe>
+          </div>
+        </div>
+      </li>
+      <li class="track">
+        <div class="track-row" data-track-trigger>
+          <span class="track-num">14</span>
+          <div class="track-info">
+            <span class="track-title">Zinek Yes'her</span>
+          </div>
+          <a class="track-download" href="https://drive.google.com/uc?export=download&id=13HY-kRGkQKvJrrjEaQMMyOjTtoaZoHRC" aria-label="Download Zinek Yes'her" onclick="event.stopPropagation()">
+            <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+          </a>
+          <button class="track-toggle" aria-expanded="false" aria-label="Play Zinek Yes'her">
+            <svg class="play-icon icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+            <svg class="play-icon icon-pause" viewBox="0 0 24 24" fill="currentColor" style="margin-left:0;"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>
+          </button>
+        </div>
+        <div class="track-player">
+          <div class="player-frame">
+            <iframe src="https://drive.google.com/file/d/13HY-kRGkQKvJrrjEaQMMyOjTtoaZoHRC/preview"
+                    loading="lazy" allow="autoplay"></iframe>
+          </div>
+        </div>
+      </li>
+      <li class="track">
+        <div class="track-row" data-track-trigger>
+          <span class="track-num">15</span>
+          <div class="track-info">
+            <span class="track-title">Ya Hale'k</span>
+          </div>
+          <a class="track-download" href="https://drive.google.com/uc?export=download&id=1Qop2ypvrkvRUPUtUe4N48JYTIP5aAE8a" aria-label="Download Ya Hale'k" onclick="event.stopPropagation()">
+            <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+          </a>
+          <button class="track-toggle" aria-expanded="false" aria-label="Play Ya Hale'k">
+            <svg class="play-icon icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+            <svg class="play-icon icon-pause" viewBox="0 0 24 24" fill="currentColor" style="margin-left:0;"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>
+          </button>
+        </div>
+        <div class="track-player">
+          <div class="player-frame">
+            <iframe src="https://drive.google.com/file/d/1Qop2ypvrkvRUPUtUe4N48JYTIP5aAE8a/preview"
+                    loading="lazy" allow="autoplay"></iframe>
+          </div>
+        </div>
+      </li>
+      <li class="track">
+        <div class="track-row" data-track-trigger>
+          <span class="track-num">16</span>
+          <div class="track-info">
+            <span class="track-title">Chachitah</span>
+          </div>
+          <a class="track-download" href="https://drive.google.com/uc?export=download&id=18ExWAneFRJFfYgWtsXU_8i45C6HohvRq" aria-label="Download Chachitah" onclick="event.stopPropagation()">
+            <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+          </a>
+          <button class="track-toggle" aria-expanded="false" aria-label="Play Chachitah">
+            <svg class="play-icon icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+            <svg class="play-icon icon-pause" viewBox="0 0 24 24" fill="currentColor" style="margin-left:0;"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>
+          </button>
+        </div>
+        <div class="track-player">
+          <div class="player-frame">
+            <iframe src="https://drive.google.com/file/d/18ExWAneFRJFfYgWtsXU_8i45C6HohvRq/preview"
+                    loading="lazy" allow="autoplay"></iframe>
+          </div>
+        </div>
+      </li>
+
+
+      <li class="track">
+        <div class="track-row" data-track-trigger>
+          <span class="track-num">17</span>
+          <div class="track-info">
+            <span class="track-title">A'ach mn Chafek</span>
+          </div>
+          <a class="track-download" href="https://drive.google.com/uc?export=download&id=1pbXpNdckgo6hC9dvhQnkv_w-_XV7i3AN" aria-label="Download A'ach mn Chafek" onclick="event.stopPropagation()">
+            <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+          </a>
+          <button class="track-toggle" aria-expanded="false" aria-label="Play A'ach mn Chafek">
+            <svg class="play-icon icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+            <svg class="play-icon icon-pause" viewBox="0 0 24 24" fill="currentColor" style="margin-left:0;"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>
+          </button>
+        </div>
+        <div class="track-player">
+          <div class="player-frame">
+            <iframe src="https://drive.google.com/file/d/1pbXpNdckgo6hC9dvhQnkv_w-_XV7i3AN/preview"
+                    loading="lazy" allow="autoplay"></iframe>
+          </div>
+        </div>
+      </li>
+      <li class="track">
+        <div class="track-row" data-track-trigger>
+          <span class="track-num">18</span>
+          <div class="track-info">
+            <span class="track-title">Fech Kam Ha'dleel</span>
+          </div>
+          <a class="track-download" href="https://drive.google.com/uc?export=download&id=1bSV2Q6qPax30k2D02uk1sKlhrdfAnYKW" aria-label="Download Fech Kam Ha'dleel" onclick="event.stopPropagation()">
+            <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+          </a>
+          <button class="track-toggle" aria-expanded="false" aria-label="Play Fech Kam Ha'dleel">
+            <svg class="play-icon icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+            <svg class="play-icon icon-pause" viewBox="0 0 24 24" fill="currentColor" style="margin-left:0;"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>
+          </button>
+        </div>
+        <div class="track-player">
+          <div class="player-frame">
+            <iframe src="https://drive.google.com/file/d/1bSV2Q6qPax30k2D02uk1sKlhrdfAnYKW/preview"
+                    loading="lazy" allow="autoplay"></iframe>
+          </div>
+        </div>
+      </li>
+      <li class="track">
+        <div class="track-row" data-track-trigger>
+          <span class="track-num">19</span>
+          <div class="track-info">
+            <span class="track-title">Fares Ahlemi</span>
+          </div>
+          <a class="track-download" href="https://drive.google.com/uc?export=download&id=1D-pTQfaJ1Z5DE9jH6FNFAFmCPHQza2zT" aria-label="Download Fares Ahlemi" onclick="event.stopPropagation()">
+            <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+          </a>
+          <button class="track-toggle" aria-expanded="false" aria-label="Play Fares Ahlemi">
+            <svg class="play-icon icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+            <svg class="play-icon icon-pause" viewBox="0 0 24 24" fill="currentColor" style="margin-left:0;"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>
+          </button>
+        </div>
+        <div class="track-player">
+          <div class="player-frame">
+            <iframe src="https://drive.google.com/file/d/1D-pTQfaJ1Z5DE9jH6FNFAFmCPHQza2zT/preview"
+                    loading="lazy" allow="autoplay"></iframe>
+          </div>
+        </div>
+      </li>
+      <li class="track">
+        <div class="track-row" data-track-trigger>
+          <span class="track-num">20</span>
+          <div class="track-info">
+            <span class="track-title">Ya'ma Brasek</span>
+          </div>
+          <a class="track-download" href="https://drive.google.com/uc?export=download&id=1SFObYTvp5ooiLEMcyBrr4RNhSwYPYreh" aria-label="Download Ya'ma Brasek" onclick="event.stopPropagation()">
+            <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+          </a>
+          <button class="track-toggle" aria-expanded="false" aria-label="Play Ya'ma Brasek">
+            <svg class="play-icon icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+            <svg class="play-icon icon-pause" viewBox="0 0 24 24" fill="currentColor" style="margin-left:0;"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>
+          </button>
+        </div>
+        <div class="track-player">
+          <div class="player-frame">
+            <iframe src="https://drive.google.com/file/d/1SFObYTvp5ooiLEMcyBrr4RNhSwYPYreh/preview"
+                    loading="lazy" allow="autoplay"></iframe>
+          </div>
+        </div>
+      </li>
+      <li class="track">
+        <div class="track-row" data-track-trigger>
+          <span class="track-num">21</span>
+          <div class="track-info">
+            <span class="track-title">Zinou ma Fama</span>
+          </div>
+          <a class="track-download" href="https://drive.google.com/uc?export=download&id=1PD2mXyXH1Wd0ihuiBtOHWCdfAOue3won" aria-label="Download Zinou ma Fama" onclick="event.stopPropagation()">
+            <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+          </a>
+          <button class="track-toggle" aria-expanded="false" aria-label="Play Zinou ma Fama">
+            <svg class="play-icon icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+            <svg class="play-icon icon-pause" viewBox="0 0 24 24" fill="currentColor" style="margin-left:0;"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>
+          </button>
+        </div>
+        <div class="track-player">
+          <div class="player-frame">
+            <iframe src="https://drive.google.com/file/d/1PD2mXyXH1Wd0ihuiBtOHWCdfAOue3won/preview"
+                    loading="lazy" allow="autoplay"></iframe>
+          </div>
+        </div>
+      </li>
+      <li class="track">
+        <div class="track-row" data-track-trigger>
+          <span class="track-num">22</span>
+          <div class="track-info">
+            <span class="track-title">Aala Bali</span>
+          </div>
+          <a class="track-download" href="https://drive.google.com/uc?export=download&id=1mGEIbA4cy4-QqRHvokDBtDNht636DLR-" aria-label="Download Aala Bali" onclick="event.stopPropagation()">
+            <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+          </a>
+          <button class="track-toggle" aria-expanded="false" aria-label="Play Aala Bali">
+            <svg class="play-icon icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+            <svg class="play-icon icon-pause" viewBox="0 0 24 24" fill="currentColor" style="margin-left:0;"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>
+          </button>
+        </div>
+        <div class="track-player">
+          <div class="player-frame">
+            <iframe src="https://drive.google.com/file/d/1mGEIbA4cy4-QqRHvokDBtDNht636DLR-/preview"
+                    loading="lazy" allow="autoplay"></iframe>
+          </div>
+        </div>
+      </li>
+      <li class="track">
+        <div class="track-row" data-track-trigger>
+          <span class="track-num">23</span>
+          <div class="track-info">
+            <span class="track-title">Kebreya'ee</span>
+          </div>
+          <a class="track-download" href="https://drive.google.com/uc?export=download&id=1FrYeeTv2BKxgZnJa-pNBvyHCvkV1jGmu" aria-label="Download Kebreya'ee" onclick="event.stopPropagation()">
+            <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+          </a>
+          <button class="track-toggle" aria-expanded="false" aria-label="Play Kebreya'ee">
+            <svg class="play-icon icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+            <svg class="play-icon icon-pause" viewBox="0 0 24 24" fill="currentColor" style="margin-left:0;"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>
+          </button>
+        </div>
+        <div class="track-player">
+          <div class="player-frame">
+            <iframe src="https://drive.google.com/file/d/1FrYeeTv2BKxgZnJa-pNBvyHCvkV1jGmu/preview"
+                    loading="lazy" allow="autoplay"></iframe>
+          </div>
+        </div>
+      </li>
+
+      <li class="track">
+        <div class="track-row" data-track-trigger>
+          <span class="track-num">24</span>
+          <div class="track-info">
+            <span class="track-title">Nour El Ein</span>
+          </div>
+          <a class="track-download" href="https://drive.google.com/uc?export=download&id=1kF-s78AYTFc-OOzVdxgA6mNFGkLmNrJe" aria-label="Download Nour El Ein" onclick="event.stopPropagation()">
+            <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+          </a>
+          <button class="track-toggle" aria-expanded="false" aria-label="Play Nour El Ein">
+            <svg class="play-icon icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+            <svg class="play-icon icon-pause" viewBox="0 0 24 24" fill="currentColor" style="margin-left:0;"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>
+          </button>
+        </div>
+        <div class="track-player">
+          <div class="player-frame">
+            <iframe src="https://drive.google.com/file/d/1kF-s78AYTFc-OOzVdxgA6mNFGkLmNrJe/preview"
+                    loading="lazy" allow="autoplay"></iframe>
+          </div>
+        </div>
+      </li>
+
+
+      <li class="track">
+        <div class="track-row" data-track-trigger>
+          <span class="track-num">25</span>
+          <div class="track-info">
+            <span class="track-title">Wallah Moch Normal</span>
+          </div>
+          <a class="track-download" href="https://drive.google.com/uc?export=download&id=1b6WjpMW8e1lHI3q-eXoGQPXH_Jr10nOA" aria-label="Download Wallah Moch Normal" onclick="event.stopPropagation()">
+            <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+          </a>
+          <button class="track-toggle" aria-expanded="false" aria-label="Play Wallah Moch Normal">
+            <svg class="play-icon icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+            <svg class="play-icon icon-pause" viewBox="0 0 24 24" fill="currentColor" style="margin-left:0;"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>
+          </button>
+        </div>
+        <div class="track-player">
+          <div class="player-frame">
+            <iframe src="https://drive.google.com/file/d/1b6WjpMW8e1lHI3q-eXoGQPXH_Jr10nOA/preview"
+                    loading="lazy" allow="autoplay"></iframe>
+          </div>
+        </div>
+      </li>
+      <li class="track">
+        <div class="track-row" data-track-trigger>
+          <span class="track-num">26</span>
+          <div class="track-info">
+            <span class="track-title">Ya Awled Tounes</span>
+          </div>
+          <a class="track-download" href="https://drive.google.com/uc?export=download&id=1KzimCtDmFsa1iMCIwGHrylmtMCJIGavZ" aria-label="Download Ya Awled Tounes" onclick="event.stopPropagation()">
+            <svg class="dl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+          </a>
+          <button class="track-toggle" aria-expanded="false" aria-label="Play Ya Awled Tounes">
+            <svg class="play-icon icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4 L20 12 L6 20 Z"/></svg>
+            <svg class="play-icon icon-pause" viewBox="0 0 24 24" fill="currentColor" style="margin-left:0;"><rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/></svg>
+          </button>
+        </div>
+        <div class="track-player">
+          <div class="player-frame">
+            <iframe src="https://drive.google.com/file/d/1KzimCtDmFsa1iMCIwGHrylmtMCJIGavZ/preview"
+                    loading="lazy" allow="autoplay"></iframe>
+          </div>
+        </div>
+      </li>
+
+    </ol>
+  </div>
+</section>
+
+<script>
+document.querySelectorAll('.track-row').forEach(row => {
+  row.addEventListener('click', (e) => {
+    if(e.target.closest('.track-download')) return;
+    const track = row.closest('.track');
+    const btn = row.querySelector('.track-toggle');
+    const isOpen = track.classList.toggle('is-open');
+    btn.setAttribute('aria-expanded', isOpen);
+  });
+});
+</script>
+</body>
+</html>
